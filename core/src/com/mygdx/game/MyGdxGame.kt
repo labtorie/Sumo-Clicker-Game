@@ -85,13 +85,13 @@ class MyGdxGame : ApplicationAdapter() {
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             pushBody(0)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.X)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             pushBody(1)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
             pushBody(2)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             pushBody(3)
         }
         debugRenderer.render(world, camera.combined)
