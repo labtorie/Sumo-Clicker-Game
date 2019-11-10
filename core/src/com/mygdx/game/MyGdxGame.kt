@@ -48,35 +48,33 @@ class MyGdxGame : ApplicationAdapter() {
         debugRenderer = Box2DDebugRenderer(true, true, false, true, true, true)
         createPlayer(world, 0f, 0f)
 
+
     }
 
-    // I can't figure out what am I doing wrong. Lemme explain....
     private fun pushBody(dir: Int) {
         lateinit var impulseRaw: Vector2
         lateinit var pointRaw: Vector2
-        // Gonna describe the first case
         if (dir == 0) { // Pushing bottom-left corner
             impulseRaw = Vector2(-sideForce, forwardForce) // Creating the impulse in body's coordinates
-            pointRaw = Vector2(-playerWidth, -playerHeight) // Same for the point we want to push
+            pointRaw = Vector2(body.position.x - playerWidth, body.position.y - playerHeight) // Same for the point we want to push
         }
+
         if (dir == 1) {
             impulseRaw = Vector2(sideForce, forwardForce)
-            pointRaw = Vector2(playerWidth, -playerHeight)
+            pointRaw = Vector2(body.position.x + playerWidth, body.position.y - playerHeight)
+
         }
         if (dir == 2) {
             impulseRaw = Vector2(-sideForce, -forwardForce)
-            pointRaw = Vector2(-playerWidth, playerHeight)
+            pointRaw = Vector2(body.position.x - playerWidth, body.position.y + playerHeight)
         }
         if (dir == 3) {
             impulseRaw = Vector2(sideForce, -forwardForce)
-            pointRaw = Vector2(playerWidth, playerHeight)
+            pointRaw = Vector2(body.position.x + playerWidth, body.position.y + playerHeight)
         }
-
-        // And now we've got a func below that takes impulse vector, point vector and some shitty bool as parameters
-        // I use a rotateRad() method to make the force depended on the body's angle
-        // As a result it seems like it works properly, but it does not. I be like: FFFFFFUUUUUUUUUUUU!!!!!!!!
-        body.applyLinearImpulse(impulseRaw.rotateRad(body.angle), pointRaw.rotateRad(body.angle), true)
+        body.applyLinearImpulse(impulseRaw.rotateRad(body.angle), pointRaw.rotateAroundRad(body.position, body.angle), true)
     }
+
 
     override fun render() {
         Gdx.gl.glClearColor(0.16f, 0.16f, 0.16f, 1f)
