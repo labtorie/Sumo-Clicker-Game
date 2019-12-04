@@ -1,7 +1,5 @@
 package com.mygdx.game.entities
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Animation
@@ -15,6 +13,7 @@ import com.mygdx.game.playerWidth
 import com.mygdx.game.sideForce
 import kotlin.math.PI
 import com.badlogic.gdx.utils.Array
+import com.mygdx.game.utils.Directions
 
 const val ANIMATION_FRAMES_COUNT = 8
 
@@ -71,26 +70,21 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
         rectShape.dispose()
     }
 
-    private fun pushBody(dir: Int) {
-        // todo refactor
-        lateinit var impulseRaw: Vector2
-        lateinit var pointRaw: Vector2
-        if (dir == 0) { // Pushing bottom-left corner
-            impulseRaw = Vector2(-sideForce, forwardForce) // Creating the impulse in body's coordinates
-            pointRaw = Vector2(body.position.x - playerWidth, body.position.y - playerHeight) // Same for the point we want to push
+    fun pushBody(direction: Directions) {
+        val impulseRaw = when(direction) {
+            Directions.BOTTOM_LEFT -> Vector2(-sideForce, forwardForce)
+            Directions.BOTTOM_RIGHT -> Vector2(sideForce, forwardForce)
+            Directions.TOP_LEFT -> Vector2(-sideForce, -forwardForce)
+            Directions.TOP_RIGHT -> Vector2(sideForce, -forwardForce)
+            Directions.CENTER -> return
         }
-        if (dir == 1) {
-            impulseRaw = Vector2(sideForce, forwardForce)
-            pointRaw = Vector2(body.position.x + playerWidth, body.position.y - playerHeight)
 
-        }
-        if (dir == 2) {
-            impulseRaw = Vector2(-sideForce, -forwardForce)
-            pointRaw = Vector2(body.position.x - playerWidth, body.position.y + playerHeight)
-        }
-        if (dir == 3) {
-            impulseRaw = Vector2(sideForce, -forwardForce)
-            pointRaw = Vector2(body.position.x + playerWidth, body.position.y + playerHeight)
+        val pointRaw = when(direction) {
+            Directions.BOTTOM_LEFT -> Vector2(body.position.x - playerWidth, body.position.y - playerHeight)
+            Directions.BOTTOM_RIGHT -> Vector2(body.position.x + playerWidth, body.position.y - playerHeight)
+            Directions.TOP_LEFT -> Vector2(body.position.x - playerWidth, body.position.y + playerHeight)
+            Directions.TOP_RIGHT -> Vector2(body.position.x + playerWidth, body.position.y + playerHeight)
+            Directions.CENTER -> return
         }
 
         body.applyLinearImpulse(impulseRaw.rotateRad(body.angle), pointRaw.rotateAroundRad(body.position, body.angle), true)
@@ -98,23 +92,6 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
 
     fun update(delta: Float) {
         stateTime += delta
-        handleInput()
-    }
-
-    private fun handleInput() {
-        // todo refactor to intput controller
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            pushBody(0)
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            pushBody(1)
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            pushBody(2)
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            pushBody(3)
-        }
     }
 
     fun draw() {

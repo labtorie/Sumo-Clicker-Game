@@ -14,7 +14,6 @@ import com.mygdx.game.entities.Player
 import com.mygdx.game.entities.Ring
 import com.mygdx.game.screens.PlayScreen
 
-
 class Game : ApplicationAdapter() {
     private lateinit var playScreen: PlayScreen
 

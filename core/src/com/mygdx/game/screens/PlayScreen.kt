@@ -1,6 +1,7 @@
 package com.mygdx.game.screens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -12,11 +13,12 @@ import com.mygdx.game.cameraScale
 import com.mygdx.game.entities.Player
 import com.mygdx.game.entities.Ring
 import com.mygdx.game.targetFPS
+import com.mygdx.game.utils.getDirectionByScreenCoords
 
 class PlayScreen(private val game: Game) : ScreenAdapter() {
-
     init {
         Box2D.init()
+        Gdx.input.inputProcessor = PlayScreenInputAdapter(this)
     }
 
     private val world = World(Vector2(0f, 0f), true)
@@ -36,6 +38,15 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
         camera.update()
     }
 
+    fun handleTouch(x: Int, y: Int) {
+        val direction = getDirectionByScreenCoords(x, y)
+        player.pushBody(direction)
+    }
+
+    fun handleKeyTyped(char: Char) {
+        // the same for keys... but we don't need them actually :)
+    }
+
     private fun draw() {
         ring.draw()
         player.draw()
@@ -51,5 +62,21 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
     override fun dispose() {
         ring.dispose()
         player.dispose()
+    }
+}
+
+class PlayScreenInputAdapter(private val screen: PlayScreen) : InputAdapter() {
+    override fun keyTyped(char: Char): Boolean {
+        screen.handleKeyTyped(char)
+        return true
+    }
+
+    override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
+        screen.handleTouch(x, y)
+        return true
+    }
+
+    override fun touchUp(x: Int, y: Int, pointer: Int, button: Int): Boolean {
+        return true
     }
 }
