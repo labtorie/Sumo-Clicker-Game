@@ -2,7 +2,7 @@ package com.mygdx.game.desktop
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-import com.mygdx.game.MyGdxGame
+import com.mygdx.game.Game
 
 object DesktopLauncher {
     @JvmStatic
@@ -10,7 +10,7 @@ object DesktopLauncher {
         val config = LwjglApplicationConfiguration()
         config.height = 720
         config.width = 342
-        LwjglApplication(MyGdxGame(), config)
+        LwjglApplication(Game(), config)
 
     }
 }
