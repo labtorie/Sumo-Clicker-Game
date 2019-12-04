@@ -1,6 +1,5 @@
 package com.mygdx.game
 
-
 const val cameraScale  = 50f
 const val sideForce    = 10f
 const val forwardForce = 20f
