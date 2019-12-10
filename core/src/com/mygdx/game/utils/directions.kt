@@ -10,10 +10,12 @@ enum class Directions {
     CENTER,
 }
 
+var dir_lock = arrayOf(false, false, false, false)
+
 fun getDirectionByScreenCoords(xCoord: Int, yCoord: Int): Directions {
     // translate to school coordinate system :)
-    val x = xCoord - Gdx.graphics.width/2
-    val y = - yCoord + Gdx.graphics.height/2
+    val x = xCoord - Gdx.graphics.width / 2
+    val y = -yCoord + Gdx.graphics.height / 2
     return when {
         x < 0 && y < 0 -> Directions.BOTTOM_LEFT
         x < 0 && y > 0 -> Directions.TOP_LEFT

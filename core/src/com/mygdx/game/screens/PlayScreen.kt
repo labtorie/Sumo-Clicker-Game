@@ -13,6 +13,7 @@ import com.mygdx.game.cameraScale
 import com.mygdx.game.entities.Player
 import com.mygdx.game.entities.Ring
 import com.mygdx.game.targetFPS
+import com.mygdx.game.utils.dir_lock
 import com.mygdx.game.utils.getDirectionByScreenCoords
 
 class PlayScreen(private val game: Game) : ScreenAdapter() {
@@ -27,6 +28,8 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
     private val player = Player(world, camera, 0f, 0f)
     private val ring = Ring(camera)
 
+
+
     private fun clear() {
         Gdx.gl.glClearColor(0.16f, 0.16f, 0.16f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -40,7 +43,7 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
 
     fun handleTouch(x: Int, y: Int) {
         val direction = getDirectionByScreenCoords(x, y)
-        player.pushBody(direction)
+            player.pushBody(direction)
     }
 
     fun handleKeyTyped(char: Char) {
@@ -72,11 +75,14 @@ class PlayScreenInputAdapter(private val screen: PlayScreen) : InputAdapter() {
     }
 
     override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
-        screen.handleTouch(x, y)
+        if (!dir_lock[getDirectionByScreenCoords(x,y).ordinal])
+        {screen.handleTouch(x, y)
+            dir_lock[getDirectionByScreenCoords(x,y).ordinal] = true}
         return true
     }
 
     override fun touchUp(x: Int, y: Int, pointer: Int, button: Int): Boolean {
+        dir_lock[getDirectionByScreenCoords(x,y).ordinal] = false
         return true
     }
 }
