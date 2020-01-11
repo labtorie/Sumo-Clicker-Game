@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.physics.box2d.World
 import com.mygdx.game.Game
 import com.mygdx.game.cameraScale
+import com.mygdx.game.entities.Foreground
 import com.mygdx.game.entities.Player
 import com.mygdx.game.entities.Ring
 import com.mygdx.game.targetFPS
@@ -23,11 +24,13 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
     }
 
     private val world = World(Vector2(0f, 0f), true)
-    private val camera = OrthographicCamera(Gdx.graphics.width.toFloat() / cameraScale, Gdx.graphics.height.toFloat() / cameraScale)
+    private val camera = OrthographicCamera(
+            Gdx.graphics.width.toFloat() / (cameraScale * Gdx.graphics.density),
+            Gdx.graphics.height.toFloat() / (cameraScale * Gdx.graphics.density))
 
     private val player = Player(world, camera, 0f, 0f)
     private val ring = Ring(camera)
-
+    private val foreground = Foreground(camera)
 
 
     private fun clear() {
@@ -37,13 +40,12 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
 
     private fun update(delta: Float) {
         player.update(delta)
-        camera.position.set(Vector2(player.body.position.x /1.5f, player.body.position.y /1.5f), camera.position.z)
+     //   camera.position.set(Vector2(player.body.position.x / 1.5f, player.body.position.y / 1.5f), camera.position.z)
         camera.update()
     }
 
     fun handleTouch(x: Int, y: Int) {
-        val direction = getDirectionByScreenCoords(x, y)
-            player.pushBody(direction)
+        player.pushBody(getDirectionByScreenCoords(x, y))
     }
 
     fun handleKeyTyped(char: Char) {
@@ -51,8 +53,9 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
     }
 
     private fun draw() {
-        ring.draw()
+        ring.draw(camera)
         player.draw()
+        foreground.draw(camera)
     }
 
     override fun render(delta: Float) {
@@ -65,6 +68,7 @@ class PlayScreen(private val game: Game) : ScreenAdapter() {
     override fun dispose() {
         ring.dispose()
         player.dispose()
+        foreground.dispose()
     }
 }
 
@@ -75,14 +79,15 @@ class PlayScreenInputAdapter(private val screen: PlayScreen) : InputAdapter() {
     }
 
     override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
-        if (!dir_lock[getDirectionByScreenCoords(x,y).ordinal])
-        {screen.handleTouch(x, y)
-            dir_lock[getDirectionByScreenCoords(x,y).ordinal] = true}
+        if (!dir_lock[getDirectionByScreenCoords(x, y).ordinal]) {
+            screen.handleTouch(x, y)
+            dir_lock[getDirectionByScreenCoords(x, y).ordinal] = true
+        }
         return true
     }
 
     override fun touchUp(x: Int, y: Int, pointer: Int, button: Int): Boolean {
-        dir_lock[getDirectionByScreenCoords(x,y).ordinal] = false
+        dir_lock[getDirectionByScreenCoords(x, y).ordinal] = false
         return true
     }
 }

@@ -7,22 +7,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.utils.Array
 import com.mygdx.game.forwardForce
 import com.mygdx.game.playerHeight
 import com.mygdx.game.playerWidth
 import com.mygdx.game.sideForce
-import kotlin.math.PI
-import com.badlogic.gdx.utils.Array
 import com.mygdx.game.utils.Directions
-
-const val ANIMATION_FRAMES_COUNT = 8
+import kotlin.math.PI
+import kotlin.math.abs
 
 class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Float) {
     // Creating the box which represents the fighters' behavior
     // ...inside of the fighter
 
     private val batch = SpriteBatch()
-//    private val debugRenderer = Box2DDebugRenderer(true, false, false, false, false, false)
+    //    private val debugRenderer = Box2DDebugRenderer(true, false, false, false, false, false)
     private var stateTime = 0f
 
     val body: Body
@@ -31,11 +30,13 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
     private val rectFixDef = FixtureDef()
 
     private val texture = Texture("player.png")
-    private val split = TextureRegion.split(texture, texture.width / ANIMATION_FRAMES_COUNT, texture.height)
+    private val split = TextureRegion.split(texture, texture.width / 4, texture.height / 2)
 
     // todo there could be MORE kotlin-like creation))))
     private val frames = Array<TextureRegion>().apply {
-        for (i in 0 until ANIMATION_FRAMES_COUNT-1) add(split[0][i])
+        for (n in 0 until 2)
+        for (i in 0 until 4)
+                add(split[n][i])
     }
 
     private val animation = Animation(0.1f, frames)
@@ -71,20 +72,18 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
     }
 
     fun pushBody(direction: Directions) {
-        val impulseRaw = when(direction) {
+        val impulseRaw = when (direction) {
             Directions.BOTTOM_LEFT -> Vector2(-sideForce, forwardForce)
             Directions.BOTTOM_RIGHT -> Vector2(sideForce, forwardForce)
             Directions.TOP_LEFT -> Vector2(-sideForce, -forwardForce)
             Directions.TOP_RIGHT -> Vector2(sideForce, -forwardForce)
-            Directions.CENTER -> return
         }
 
-        val pointRaw = when(direction) {
+        val pointRaw = when (direction) {
             Directions.BOTTOM_LEFT -> Vector2(body.position.x - playerWidth, body.position.y - playerHeight)
             Directions.BOTTOM_RIGHT -> Vector2(body.position.x + playerWidth, body.position.y - playerHeight)
             Directions.TOP_LEFT -> Vector2(body.position.x - playerWidth, body.position.y + playerHeight)
             Directions.TOP_RIGHT -> Vector2(body.position.x + playerWidth, body.position.y + playerHeight)
-            Directions.CENTER -> return
         }
 
         body.applyLinearImpulse(impulseRaw.rotateRad(body.angle), pointRaw.rotateAroundRad(body.position, body.angle), true)
@@ -98,16 +97,15 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
         var frame = animation.getKeyFrame(stateTime, true)
 
         if (
-                body.linearVelocity.len() < 2f &&
-                body.angularVelocity < 1f &&
-                body.angularVelocity > -1f
+                body.linearVelocity.len() < 0.75f &&
+                abs(body.angularVelocity) < 0.25f
         ) {
             frame = animation.getKeyFrame(0f)
         }
 
         batch.apply {
             begin()
-            draw(frame, body.position.x -2f, body.position.y-2f, 2f, 2f, 4f, 4f, 1f, 1f, body.angle / PI.toFloat() * 180f)
+            draw(frame, body.position.x - 2f, body.position.y - 2f, 2f, 2f, 4f, 4f, 1f, 1f, body.angle / PI.toFloat() * 180f)
             end()
         }
     }
@@ -121,7 +119,7 @@ class Player(world: World, camera: OrthographicCamera, var x: Float, var y: Floa
 //    }
 
     fun dispose() {
-        texture.dispose()
+         texture.dispose()
     }
 
 }

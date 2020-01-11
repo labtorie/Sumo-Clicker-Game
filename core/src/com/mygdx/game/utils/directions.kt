@@ -6,8 +6,7 @@ enum class Directions {
     BOTTOM_LEFT,
     BOTTOM_RIGHT,
     TOP_LEFT,
-    TOP_RIGHT,
-    CENTER,
+    TOP_RIGHT
 }
 
 var dir_lock = arrayOf(false, false, false, false)
@@ -18,9 +17,8 @@ fun getDirectionByScreenCoords(xCoord: Int, yCoord: Int): Directions {
     val y = -yCoord + Gdx.graphics.height / 2
     return when {
         x < 0 && y < 0 -> Directions.BOTTOM_LEFT
-        x < 0 && y > 0 -> Directions.TOP_LEFT
-        x > 0 && y > 0 -> Directions.TOP_RIGHT
-        x > 0 && y < 0 -> Directions.BOTTOM_RIGHT
-        else -> Directions.CENTER
+        x < 0 && y >= 0 -> Directions.TOP_LEFT
+        x >= 0 && y >= 0 -> Directions.TOP_RIGHT
+        else -> Directions.BOTTOM_RIGHT
     }
 }

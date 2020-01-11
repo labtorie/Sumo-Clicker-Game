@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.mygdx.game.mapSize
 
 class Ring(camera: OrthographicCamera) {
     private val batch = SpriteBatch()
@@ -15,10 +16,13 @@ class Ring(camera: OrthographicCamera) {
     private val texture = Texture("bkg.png")
     private val sprite = Sprite(texture)
 
-    fun draw() {
+
+    fun draw(camera: OrthographicCamera) {
+        val x = -mapSize/2f - camera.position.x
+        val y = -mapSize/2f - camera.position.y
         batch.apply {
             begin()
-            draw(sprite,-7f, -7f, 14f, 14f)
+            draw(sprite,x, y, mapSize, mapSize)
             end()
         }
     }
